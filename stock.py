@@ -30,7 +30,7 @@ class ShipmentOut:
 
         with Transaction().set_context(context):
             for shipment in shipments:
-                for move in shipment.outgoing_moves:
+                for move in shipment.inventory_moves:
                     if not move.lot and move.product.lot_is_required(
                         move.from_location, move.to_location):
                         rest = move.quantity
