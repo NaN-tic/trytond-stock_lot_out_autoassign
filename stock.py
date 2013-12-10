@@ -13,13 +13,15 @@ class ShipmentOut:
     __name__ = 'stock.shipment.out'
 
     @classmethod
-    @Workflow.transition('assigned')
-    def assign(cls, shipments):
+    @Workflow.transition('waiting')
+    def wait(cls, shipments):
         pool = Pool()
         Lot = pool.get('stock.lot')
         Move = pool.get('stock.move')
         Location = pool.get('stock.location')
         Date = pool.get('ir.date')
+
+        super(ShipmentOut, cls).wait(shipments)
 
         context = {}
         locations = Location.search([
@@ -54,4 +56,3 @@ class ShipmentOut:
                             else:
                                 Move.write([move], {'lot': lot.id})
                                 break
-        super(ShipmentOut, cls).assign(shipments)
