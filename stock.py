@@ -13,15 +13,15 @@ class ShipmentOut:
     __name__ = 'stock.shipment.out'
 
     @classmethod
-    @Workflow.transition('waiting')
-    def wait(cls, shipments):
+    @Workflow.transition('assigned')
+    def assign(cls, shipments):
         pool = Pool()
         Lot = pool.get('stock.lot')
         Move = pool.get('stock.move')
         Location = pool.get('stock.location')
         Date = pool.get('ir.date')
 
-        super(ShipmentOut, cls).wait(shipments)
+        super(ShipmentOut, cls).assign(shipments)
 
         context = {}
         locations = Location.search([
@@ -48,11 +48,13 @@ class ShipmentOut:
                                 quantity = move.quantity - stock_available
                                 if not quantity > 0:
                                     continue
+                                Move.draft([move]) #move to draft state
                                 Move.copy([move], default={
                                     'quantity': quantity,
                                     'lot': lot.id,
                                     })
                                 Move.write([move], {'quantity': stock_available})
+                                Move.assign([move]) #move to assign state
                             else:
                                 Move.write([move], {'lot': lot.id})
                                 break

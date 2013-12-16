@@ -6,7 +6,7 @@ Autoasignación de lotes en albaranes de salida
 ----------------------------------------------
 
 En los productos que en el caso que el lote sea requerido, se asignará un lote por
-defecto en el momento que el albarán pase por el estado "esperando".
+defecto en el momento que el albarán se reserve (del estado "en espera" a "reserva").
 
 Para la asignación automática de lotes:
 
