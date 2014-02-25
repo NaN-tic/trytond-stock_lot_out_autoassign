@@ -50,10 +50,12 @@ class ShipmentOut:
                                     continue
                                 Move.draft([move]) #move to draft state
                                 Move.copy([move], default={
-                                    'quantity': quantity,
+                                    'quantity': stock_available,
                                     'lot': lot.id,
                                     })
-                                Move.write([move], {'quantity': stock_available})
+                                Move.write([move], {
+                                    'quantity': rest,
+                                    })
                                 Move.assign([move]) #move to assign state
                             else:
                                 Move.write([move], {'lot': lot.id})
