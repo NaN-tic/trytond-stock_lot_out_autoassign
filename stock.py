@@ -38,6 +38,7 @@ class ShipmentOut:
                         rest = move.quantity
                         lots = Lot.search([
                                 ('product', '=', move.product.id)
+                                ('quantity', '>', 0.0),
                                 ], order=[('lot_date', 'ASC')])
                         for lot in lots:
                             stock_available = lot.forecast_quantity
