@@ -1,6 +1,6 @@
-====================================
-Asignar lotes en albaranes de salida
-====================================
+===========================================
+Stock. Asignar lotes en albaranes de salida
+===========================================
 
 El módulo Asignar lotes en albaranes de salida le asignará un lote en los movimientos
 de salida cuando un albarán se reserva.
