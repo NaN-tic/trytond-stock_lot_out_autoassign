@@ -1,0 +1,11 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:stock.configuration,lot_priority:"
+msgid "Lot Priority"
+msgstr "Prioridad lote"
+
+msgctxt "selection:stock.configuration,lot_priority:"
+msgid "Date Lot"
+msgstr "Fecha lote"
