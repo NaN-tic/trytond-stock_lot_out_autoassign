@@ -37,7 +37,7 @@ class ShipmentOut:
                         move.from_location, move.to_location):
                         rest = move.quantity
                         lots = Lot.search([
-                                ('product', '=', move.product.id)
+                                ('product', '=', move.product.id),
                                 ('quantity', '>', 0.0),
                                 ], order=[('lot_date', 'ASC')])
                         for lot in lots:
