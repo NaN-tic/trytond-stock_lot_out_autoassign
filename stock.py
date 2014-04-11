@@ -47,8 +47,7 @@ class ShipmentOut:
                                 ('quantity', '>', 0.0),
                                 ], order=[(lot_priority, 'ASC')])
                         for lot in lots:
-                            stock_available = lot.forecast_quantity
-                            stock_quantity = lot.quantity
+                            stock_available = lot.quantity
                             if stock_available <= 0.0:
                                 continue
                             if stock_available < rest:
