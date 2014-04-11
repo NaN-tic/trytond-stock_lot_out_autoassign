@@ -16,6 +16,7 @@ class ShipmentOut:
     @Workflow.transition('assigned')
     def assign(cls, shipments):
         pool = Pool()
+        Configuration = pool.get('stock.configuration')
         Lot = pool.get('stock.lot')
         Move = pool.get('stock.move')
         Location = pool.get('stock.location')
@@ -23,14 +24,19 @@ class ShipmentOut:
 
         super(ShipmentOut, cls).assign(shipments)
 
-        context = {}
+        configuration = Configuration(1)
+        lot_priority = configuration.lot_priority or 'lot_date'
+
+        transaction = Transaction()
+        context = transaction.context
+
         locations = Location.search([
                 ('type', '=', 'storage'),
                 ])
         context['locations'] = [l.id for l in locations]
         context['stock_date_end'] = Date.today()
 
-        with Transaction().set_context(context):
+        with transaction.set_context(context):
             for shipment in shipments:
                 for move in shipment.inventory_moves:
                     if not move.lot and move.product.lot_is_required(
@@ -39,9 +45,10 @@ class ShipmentOut:
                         lots = Lot.search([
                                 ('product', '=', move.product.id),
                                 ('quantity', '>', 0.0),
-                                ], order=[('lot_date', 'ASC')])
+                                ], order=[(lot_priority, 'ASC')])
                         for lot in lots:
                             stock_available = lot.forecast_quantity
+                            stock_quantity = lot.quantity
                             if stock_available <= 0.0:
                                 continue
                             if stock_available < rest:

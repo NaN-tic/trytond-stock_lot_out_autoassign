@@ -12,7 +12,7 @@ if os.path.isdir(DIR):
 
 import unittest
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import test_depends
+from trytond.tests.test_tryton import test_depends, test_view
 
 
 class StockLotOutAutoassignTestCase(unittest.TestCase):
@@ -22,6 +22,12 @@ class StockLotOutAutoassignTestCase(unittest.TestCase):
 
     def setUp(self):
         trytond.tests.test_tryton.install_module('stock_lot_out_autoassign')
+
+    def test0005views(self):
+        '''
+        Test views.
+        '''
+        test_view('stock_lot_out_autoassign')
 
     def test0006depends(self):
         '''
