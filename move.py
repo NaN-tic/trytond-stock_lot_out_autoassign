@@ -12,7 +12,7 @@ class Move:
     __name__ = 'stock.move'
 
     @classmethod
-    def assign_try(cls, moves, grouping=('product',)):
+    def assign_try(cls, moves, with_childs=True, grouping=('product',)):
         '''
         If lots required assign lots in lot priority before assigning move.
         '''
