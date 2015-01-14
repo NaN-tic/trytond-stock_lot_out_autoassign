@@ -76,4 +76,5 @@ class Move:
                     move.save()
                 lots_by_product[move.product.id] = lots
 
-        return super(Move, cls).assign_try(new_moves + moves, grouping)
+        return super(Move, cls).assign_try(new_moves + moves,
+            with_childs=with_childs, grouping=grouping)
