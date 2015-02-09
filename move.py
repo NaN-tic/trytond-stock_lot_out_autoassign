@@ -30,29 +30,21 @@ class Move:
         lots_by_product = {}
         consumed_quantities = {}
         to_update = []
-        products = [m.product.id for m in moves]
-        locations = [m.from_location.id for m in moves]
-        ctx = {
-            'stock_date_end': today,
-            'stock_assign': True,
-            'forecast': False,
-            'locations': locations,
-            }
-        with Transaction().set_context(ctx):
-            lots = Lot.search([
-                    ('product', 'in', products),
-                    ('quantity', '>', 0.0),
-                    ], order=[(lot_priority, 'ASC')])
-        for lot in lots:
-            product_id = lot.product.id
-            if product_id not in lots_by_product:
-                lots_by_product[product_id] = [lot]
-            else:
-                lots_by_product[product_id].append(lot)
-
         for move in moves:
             if (not move.lot and move.product.lot_is_required(
                         move.from_location, move.to_location)):
+                if move.product.id not in lots_by_product:
+                    search_context = {
+                        'stock_date_end': today,
+                        'locations': [move.from_location.id],
+                        'stock_assign': True,
+                        'forecast': False,
+                        }
+                    with Transaction().set_context(search_context):
+                        lots_by_product[move.product.id] = Lot.search([
+                                ('product', '=', move.product.id),
+                                ('quantity', '>', 0.0),
+                                ], order=[(lot_priority, 'ASC')])
 
                 lots = lots_by_product[move.product.id]
                 remainder = move.internal_quantity
@@ -87,8 +79,7 @@ class Move:
                     move.save()
                 lots_by_product[move.product.id] = lots
 
-        if to_update:
-            cls.write(*to_update)
+        cls.write(*to_update)
 
         return super(Move, cls).assign_try(new_moves + moves,
             with_childs=with_childs, grouping=grouping)
