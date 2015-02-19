@@ -18,6 +18,7 @@ class Move:
         '''
         pool = Pool()
         Uom = pool.get('product.uom')
+        Period = pool.get('stock.period')
         Lot = pool.get('stock.lot')
         Date = pool.get('ir.date')
         Configuration = pool.get('stock.configuration')
@@ -25,6 +26,13 @@ class Move:
 
         configuration = Configuration(1)
         lot_priority = configuration.lot_priority or 'lot_date'
+
+        period = None
+        periods = Period.search([
+                ('state', '=', 'closed'),
+                ], order=[('date', 'DESC')], limit=1)
+        if periods:
+            period, = periods
 
         today = Date.today()
         new_moves = []
@@ -38,10 +46,13 @@ class Move:
             'locations': location_ids,
             }
         with Transaction().set_context(ctx):
-            lots = Lot.search([
+            lot_domain = [
                     ('product', 'in', product_ids),
                     ('quantity', '>', 0.0),
-                    ], order=[(lot_priority, 'ASC')])
+                    ]
+            if period:
+                lot_domain.append(('lot_date', '>', period.date))
+            lots = Lot.search(lot_domain, order=[(lot_priority, 'ASC')])
         query = cls.compute_quantities_query(location_ids)
         cursor.execute(*query)
         quantities = cursor.fetchall()
