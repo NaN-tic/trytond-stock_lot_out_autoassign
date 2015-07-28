@@ -31,6 +31,7 @@ class Move:
         to_update = []
         product_ids = [m.product.id for m in moves]
         location_ids = [m.from_location.id for m in moves]
+
         ctx = {
             'stock_date_end': today,
             'stock_assign': True,
@@ -38,10 +39,15 @@ class Move:
             'locations': location_ids,
             }
         with Transaction().set_context(ctx):
-            lots = Lot.search([
-                    ('product', 'in', product_ids),
-                    ('quantity', '>', 0.0),
-                    ], order=[(lot_priority, 'ASC')])
+            domain = [
+                ('product', 'in', product_ids),
+                ('quantity', '>', 0.0),
+                ]
+            # TODO: Allow location allow expired
+            if hasattr(Lot, 'expired'):
+                domain.append(('expired', '=', False))
+            lots = Lot.search(domain, order=[(lot_priority, 'ASC')])
+
         query = cls.compute_quantities_query(location_ids)
         cursor.execute(*query)
         quantities = cursor.fetchall()
