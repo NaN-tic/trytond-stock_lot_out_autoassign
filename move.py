@@ -21,11 +21,14 @@ class Move:
         Lot = pool.get('stock.lot')
         Date = pool.get('ir.date')
         Configuration = pool.get('stock.configuration')
-        cursor = Transaction().cursor
 
+        if not moves:
+            return super(Move, cls).assign_try(moves,
+                with_childs=with_childs, grouping=grouping)
+
+        cursor = Transaction().cursor
         configuration = Configuration(1)
         lot_priority = configuration.lot_priority or 'lot_date'
-
         today = Date.today()
         new_moves = []
         to_update = []
