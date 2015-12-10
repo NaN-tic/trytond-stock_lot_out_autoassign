@@ -33,6 +33,7 @@ class Move:
         today = Date.today()
         new_moves = []
         to_update = []
+        lots_to_update = []
         product_ids = [m.product.id for m in moves]
         location_ids = set([m.from_location.id for m in moves])
 
@@ -80,7 +81,6 @@ class Move:
                                 'lot': lot['id'],
                                 }
                             to_update.extend(([move], values))
-                            lot['quantity'] -= assigned_quantity
                         else:
                             values = {
                                 name: getattr(move, name)
@@ -107,7 +107,9 @@ class Move:
                             values['lot'] = lot['id']
                             new_moves.append(values)
                             lots.pop(0)
-
+                        lot['quantity'] -= assigned_quantity
+                        if lot['quantity'] <= 0:
+                            lots_to_update.append(Lot(lot['id']))
                         remainder -= assigned_quantity
                         product_by_lots[(product.id, lot['id'])] -= (
                             assigned_quantity)
@@ -119,6 +121,8 @@ class Move:
             cls.write(*to_update)
         if new_moves:
             new_moves = cls.create(new_moves)
+        if lots_to_update:
+            Lot.write(lots_to_update, {'active': False})
 
         return super(Move, cls).assign_try(new_moves + moves,
             with_childs=with_childs, grouping=grouping)
