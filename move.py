@@ -57,7 +57,7 @@ class Move:
         lots_by_product = {
             (q[0], q[1]): [[l, l.quantity]
                 for l in lots
-                if q[1] == l.product.id]
+                if q[1] == l.product.id and l.quantity]
             for q in quantities if q[2] > 0.0 and q[1] in product_ids
             }
 
