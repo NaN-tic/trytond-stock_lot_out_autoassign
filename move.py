@@ -14,6 +14,18 @@ class Move:
     __name__ = 'stock.move'
 
     @classmethod
+    def __setup__(cls):
+        super(Move, cls).__setup__()
+
+        # select active/inactive lots
+        if not cls.lot.context:
+            cls.lot.context = {}
+        if not 'active_test' in cls.lot.context:
+            cls.lot.context.update({
+                    'active_test': False,
+                    })
+
+    @classmethod
     def assign_try(cls, moves, with_childs=True, grouping=('product',)):
         '''
         If lots required assign lots in lot priority before assigning move.

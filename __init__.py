@@ -4,11 +4,12 @@
 from trytond.pool import Pool
 from .configuration import *
 from .move import *
-
+from .shipment import *
 
 def register():
     Pool.register(
         Configuration,
         Move,
+        ShipmentIn,
         module='stock_lot_out_autoassign', type_='model')
 
