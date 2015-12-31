@@ -11,5 +11,6 @@ def register():
         Configuration,
         Move,
         ShipmentIn,
+        ShipmentOut,
         module='stock_lot_out_autoassign', type_='model')
 
