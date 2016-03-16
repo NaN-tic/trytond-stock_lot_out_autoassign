@@ -2,6 +2,7 @@
 # The COPYRIGHT file at the top level of this repository contains
 # the full copyright notices and license terms.
 from trytond.pool import Pool, PoolMeta
+from trytond.transaction import Transaction
 
 __all__ = ['ShipmentIn', 'ShipmentOut']
 __metaclass__ = PoolMeta
@@ -43,5 +44,8 @@ class ShipmentOut:
 
         if moves:
             Move.assign_lots(moves)
+
+        with Transaction().set_context(_check_access=False):
+            shipments = cls.browse([s.id for s in shipments])
 
         return super(ShipmentOut, cls).assign_try(shipments)
